@@ -1,14 +1,21 @@
 #include <boost/foreach.hpp>
 #include "Base/Marcos.h"
-#include "LogicTree/OrNode.h"
+#include "Event/OrNode.h"
 
 namespace Egametang {
-
-bool OrNode::Run(LogicContex* contex)
+OrNode::~OrNode()
 {
 	foreach(LogicNodeIf* node, nodes)
 	{
-		if (node->Run(contex))
+		delete node;
+	}
+}
+
+bool OrNode::Check(ContexIf* contex)
+{
+	foreach(LogicNodeIf* node, nodes)
+	{
+		if (node->Check(contex))
 		{
 			return true;
 		}

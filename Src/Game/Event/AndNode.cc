@@ -1,14 +1,21 @@
 #include <boost/foreach.hpp>
 #include "Base/Marcos.h"
-#include "LogicTree/AndNode.h"
+#include "Event/AndNode.h"
 
 namespace Egametang {
-
-bool AndNode::Run(LogicContex* contex)
+AndNode::~AndNode()
 {
 	foreach(LogicNodeIf* node, nodes)
 	{
-		if (!node->Run(contex))
+		delete node;
+	}
+}
+
+bool AndNode::Check(ContexIf* contex)
+{
+	foreach(LogicNodeIf* node, nodes)
+	{
+		if (!node->Check(contex))
 		{
 			return false;
 		}
