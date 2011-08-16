@@ -1,10 +1,10 @@
 #include <boost/foreach.hpp>
 #include "Base/Marcos.h"
-#include "Event/OrNode.h"
+#include "BehaviorTree/SelectorNode.h"
 
 namespace Egametang {
 
-OrNode::~OrNode()
+SelectorNode::~SelectorNode()
 {
 	foreach(NodeIf* node, nodes)
 	{
@@ -12,11 +12,11 @@ OrNode::~OrNode()
 	}
 }
 
-bool OrNode::Run(ContexIf* contex)
+bool SelectorNode::Run(ContexIf* contex)
 {
 	foreach(NodeIf* node, nodes)
 	{
-		if (!node->Run(contex))
+		if (node->Run(contex))
 		{
 			return true;
 		}
@@ -24,15 +24,15 @@ bool OrNode::Run(ContexIf* contex)
 	return false;
 }
 
-void OrNode::AddChildNode(NodeIf *node)
+void SelectorNode::AddChildNode(NodeIf *node)
 {
 	nodes.push_back(node);
 }
 
-std::string OrNode::ToString()
+std::string SelectorNode::ToString()
 {
 	std::string s;
-	s += "OrNode: \n";
+	s += "SelectorNode: \n";
 	foreach(NodeIf* node, nodes)
 	{
 		s += "    " + node->ToString() + "\n";
@@ -40,9 +40,9 @@ std::string OrNode::ToString()
 	return s;
 }
 
-NodeIf* OrNodeFactory::GetInstance(const EventNode& conf)
+NodeIf* SelectorNodeFactory::GetInstance(const BehaviorNodeConf& conf)
 {
-	return new OrNode();
+	return new SelectorNode();
 }
 
 } // namespace Egametang
