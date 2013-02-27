@@ -2,12 +2,12 @@
 using System.Windows;
 using Infrastructure;
 
-namespace Modules.Robot
+namespace Modules.Login
 {
 	/// <summary>
 	/// LoginView.xaml 的交互逻辑
 	/// </summary>
-	// [ViewExport(RegionName = "RobotRegion"), PartCreationPolicy(CreationPolicy.Shared)]
+	[ViewExport(RegionName = "LoginRegion"), PartCreationPolicy(CreationPolicy.NonShared)]
 	public partial class LoginView
 	{
 		public LoginView()
@@ -16,11 +16,11 @@ namespace Modules.Robot
 		}
 
 		[Import]
-		private RobotViewModel ViewModel
+		private LoginViewModel ViewModel
 		{
 			get
 			{
-				return this.DataContext as RobotViewModel;
+				return this.DataContext as LoginViewModel;
 			}
 			set
 			{
@@ -28,9 +28,9 @@ namespace Modules.Robot
 			}
 		}
 
-		private void btnLogin_Click(object sender, RoutedEventArgs e)
+		private async void btnLogin_Click(object sender, RoutedEventArgs e)
 		{
-			this.ViewModel.Login();
+			await this.ViewModel.Login();
 		}
 	}
 }
