@@ -12,14 +12,10 @@ namespace DataCenter
     using System;
     using System.Collections.Generic;
     
-    public partial class t_hero_talent_info
+    public partial class t_friend_ban_match
     {
         public decimal character_guid { get; set; }
-        public int hero_id { get; set; }
-        public Nullable<int> total_used_hero_experience { get; set; }
-        public Nullable<int> enable_branch { get; set; }
-        public Nullable<int> this_branch_point { get; set; }
-        public Nullable<int> available_experience { get; set; }
+        public decimal ban_guid { get; set; }
         public System.DateTime create_time { get; set; }
         public System.DateTime modify_time { get; set; }
     }
