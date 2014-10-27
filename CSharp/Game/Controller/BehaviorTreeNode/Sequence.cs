@@ -1,6 +1,6 @@
 ﻿using Model;
 
-namespace BehaviorTree
+namespace Controller
 {
     [Node(NodeType.Sequence)]
     internal class Sequence: Node
