@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0608C0C1-F584-4092-AAF9-1E99A78E3703}</ProjectGuid>
+    <ProjectGuid>{DEF89A61-8AC7-4CCD-80B8-FC6AA2571E35}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Model</RootNamespace>
-    <AssemblyName>Model</AssemblyName>
+    <RootNamespace>ModelTest</RootNamespace>
+    <AssemblyName>ModelTest</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -36,42 +36,30 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\packages\mongocsharpdriver.1.10.0-rc1\lib\net35\MongoDB.Driver.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BehaviorTree\BehaviorTree.cs" />
-    <Compile Include="BehaviorTree\BehaviorTreeFactory.cs" />
-    <Compile Include="BehaviorTree\BlackBoard.cs" />
-    <Compile Include="BehaviorTree\Node.cs" />
-    <Compile Include="BehaviorTree\NodeAttribute.cs" />
-    <Compile Include="Buff.cs" />
-    <Compile Include="BuffType.cs" />
-    <Compile Include="Component\ActorComponent.cs" />
-    <Compile Include="Component\BehaviorTreeComponent.cs" />
-    <Compile Include="Component\BuffComponent.cs" />
-    <Compile Include="Component\ChannelUnitInfoComponent.cs" />
-    <Compile Include="Component\ConfigComponent.cs" />
-    <Compile Include="Component\EventComponent.cs" />
-    <Compile Include="Component\FactoryComponent.cs" />
-    <Compile Include="Component\NetworkComponent.cs" />
-    <Compile Include="Component\TimerComponent.cs" />
-    <Compile Include="Component\UnitComponent.cs" />
-    <Compile Include="Config\BuffConfig.cs" />
-    <Compile Include="Config\GlobalConfig.cs" />
-    <Compile Include="Config\NodeConfig.cs" />
-    <Compile Include="Config\UnitConfig.cs" />
-    <Compile Include="EnvKey.cs" />
-    <Compile Include="EventAttribute.cs" />
-    <Compile Include="EventType.cs" />
-    <Compile Include="FactoryAttribute.cs" />
-    <Compile Include="IAssemblyLoader.cs" />
-    <Compile Include="IFactory.cs" />
-    <Compile Include="MessageAttribute.cs" />
+    <Compile Include="MongoDBTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unit.cs" />
-    <Compile Include="UnitType.cs" />
-    <Compile Include="World.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Game\Model\Model.csproj">
+      <Project>{0608C0C1-F584-4092-AAF9-1E99A78E3703}</Project>
+      <Name>Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Platform\Common\Common.csproj">
+      <Project>{F06B995E-6508-4C5C-A396-554316C9215D}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -81,18 +69,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <ProjectReference Include="..\..\Platform\Common\Common.csproj">
-      <Project>{F06B995E-6508-4C5C-A396-554316C9215D}</Project>
-      <Name>Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platform\UNet\UNet.csproj">
-      <Project>{D3CEA64F-4D75-4DC9-B139-8D12EB4ACF8E}</Project>
-      <Name>UNet</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Platform\TNet\TNet.csproj">
-      <Project>{B1B78524-3F75-40D7-BF12-10B25A00C590}</Project>
-      <Name>TNet</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>
