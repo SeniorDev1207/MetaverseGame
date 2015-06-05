@@ -1,6 +1,6 @@
 ﻿namespace Model
 {
-	public interface IEventSync
+	public interface IEvent
 	{
 		void Run(Env env);
 	}
