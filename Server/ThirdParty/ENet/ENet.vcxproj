@@ -44,7 +44,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
     <CLRSupport>false</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -74,8 +74,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)\Platform\;$(IncludePath)</IncludePath>
-    <OutDir>$(SolutionDir)..\Bin\</OutDir>
-    <IntDir>$(SolutionDir)..\Temp\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\netcoreapp2.0</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\Temp</IntDir>
     <TargetExt>.dll</TargetExt>
     <TargetName>$(ProjectName)</TargetName>
   </PropertyGroup>
@@ -84,18 +84,18 @@
     <TargetName>$(ProjectName)</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(SolutionDir)\Platform\;$(IncludePath)</IncludePath>
-    <OutDir>$(ProjectDir)..\..\..\Bin\</OutDir>
+    <OutDir>$(ProjectDir)..\..\..\netcoreapp2.0</OutDir>
     <IntDir>$(ProjectDir)..\..\..\Temp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Bin\Release\</OutDir>
-    <IntDir>$(SolutionDir)\Temp\Release\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\netcoreapp2.0</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\Temp</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(ProjectDir)..\..\..\Bin\</OutDir>
-    <IntDir>$(ProjectDir)..\..\..\Temp\</IntDir>
+    <OutDir>$(ProjectDir)..\..\..\netcoreapp2.0</OutDir>
+    <IntDir>$(ProjectDir)..\..\..\Temp</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

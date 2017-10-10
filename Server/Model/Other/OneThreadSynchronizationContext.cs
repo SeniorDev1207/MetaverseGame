@@ -16,14 +16,13 @@ namespace Model
 
 		public void Update()
 		{
-			while (true)
+			while (!this.queue.IsEmpty)
 			{
 				Action a;
-				if (!this.queue.TryDequeue(out a))
+				if (this.queue.TryDequeue(out a))
 				{
-					return;
+					a();
 				}
-				a();
 			}
 		}
 

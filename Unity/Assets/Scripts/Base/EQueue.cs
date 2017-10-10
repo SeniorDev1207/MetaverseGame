@@ -5,34 +5,35 @@ namespace Model
 {
 	public class EQueue<T>: IEnumerable
 	{
-		private readonly Queue<T> queue = new Queue<T>();
+		private readonly Queue<T> list = new Queue<T>();
 
 		public void Enqueue(T t)
 		{
-			this.queue.Enqueue(t);
+			this.list.Enqueue(t);
 		}
 
 		public T Dequeue()
 		{
-			return this.queue.Dequeue();
+			T t = this.list.Dequeue();
+			return t;
 		}
 		
 		public int Count
 		{
 			get
 			{
-				return this.queue.Count;
+				return this.list.Count;
 			}
 		}
 
 		public IEnumerator GetEnumerator()
 		{
-			return this.queue.GetEnumerator();
+			return this.list.GetEnumerator();
 		}
 
 		public void Clear()
 		{
-			this.queue.Clear();
+			this.list.Clear();
 		}
 	}
 }
