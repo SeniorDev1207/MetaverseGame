@@ -117,7 +117,6 @@ namespace Hotfix
 			{
 				return;
 			}
-            UiTypes[type].Remove(type);
             uis.Remove(type);
 			ui.Dispose();
 		}
