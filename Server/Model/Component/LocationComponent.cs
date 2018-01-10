@@ -224,7 +224,7 @@ namespace Model
 				tasks = new EQueue<LocationTask>();
 				this.taskQueues[key] = tasks;
 			}
-			task.Scene = this.GetParent<Scene>();
+			task.Scene = this.GetEntity<Scene>();
 			tasks.Enqueue(task);
 		}
 

@@ -6,27 +6,26 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Model
 {
 	[BsonIgnoreExtraElements]
-	public partial class Entity : Component
+	public partial class Entity : Disposer
 	{
+		[BsonIgnore]
+		public Entity Parent { get; set; }
+
 		[BsonElement]
 		[BsonIgnoreIfNull]
-		private HashSet<Component> components;
+		private HashSet<Component> components = new HashSet<Component>();
 
 		[BsonIgnore]
-		private Dictionary<Type, Component> componentDict;
+		private Dictionary<Type, Component> componentDict = new Dictionary<Type, Component>();
 
 		protected Entity()
 		{
 			this.Id = IdGenerater.GenerateId();
-			this.components = new HashSet<Component>();
-			this.componentDict = new Dictionary<Type, Component>();
 		}
 
 		protected Entity(long id)
 		{
 			this.Id = id;
-			this.components = new HashSet<Component>();
-			this.componentDict = new Dictionary<Type, Component>();
 		}
 
 		public override void Dispose()
@@ -175,15 +174,13 @@ namespace Model
 		{
 			try
 			{
-				ObjectEvents.Instance.Add(this);
-
 				this.componentDict.Clear();
 
 				if (this.components != null)
 				{
 					foreach (Component component in this.components)
 					{
-						component.Parent = this;
+						component.Entity = this;
 						this.componentDict.Add(component.GetType(), component);
 					}
 				}

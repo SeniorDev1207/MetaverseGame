@@ -208,8 +208,6 @@ namespace Model
 			}
 
 			base.Dispose();
-
-			this.Parent?.RemoveComponent<BundleDownloaderComponent>();
 		}
 	}
 }

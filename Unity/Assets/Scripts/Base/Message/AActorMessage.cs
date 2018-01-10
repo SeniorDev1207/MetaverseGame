@@ -6,6 +6,7 @@ namespace Model
 {
 	[ProtoContract]
 	[BsonKnownTypes(typeof(AFrameMessage))]
+	[BsonKnownTypes(typeof(FrameMessage))]
 	public abstract partial class AActorMessage : AMessage
 	{
 	}

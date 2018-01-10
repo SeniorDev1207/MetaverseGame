@@ -58,7 +58,6 @@ namespace Model
 			
 			UnityEngine.Object.Destroy(GameObject);
 			children.Clear();
-			this.Parent = null;
 		}
 
 		public void SetAsFirstSibling()
@@ -69,7 +68,6 @@ namespace Model
 		public void Add(UI ui)
 		{
 			this.children.Add(ui.Name, ui);
-			ui.Parent = this;
 		}
 
 		public void Remove(string name)

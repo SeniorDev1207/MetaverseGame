@@ -6,16 +6,21 @@ namespace Model
 	public abstract partial class Component: Disposer
 	{
 		[BsonIgnore]
-		public Entity Parent { get; set; }
+		public Entity Entity { get; set; }
 
-		public T GetParent<T>() where T : Entity
+		public T GetEntity<T>() where T : Entity
 		{
-			return this.Parent as T;
+			return this.Entity as T;
 		}
 
 		protected Component()
 		{
 			this.Id = 1;
+		}
+		
+		public T GetComponent<T>() where T : Component
+		{
+			return this.Entity.GetComponent<T>();
 		}
 
 		public override void Dispose()
@@ -26,6 +31,8 @@ namespace Model
 			}
 
 			base.Dispose();
+
+			this.Entity?.RemoveComponent(this.GetType());
 		}
 	}
 }
