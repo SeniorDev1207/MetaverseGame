@@ -96,9 +96,9 @@ namespace ILRuntime.Runtime.Enviorment
             return type.MakeByRefType();
         }
 
-        public IType MakeArrayType(int rank)
+        public IType MakeArrayType()
         {
-            return type.MakeArrayType(rank);
+            return type.MakeArrayType();
         }
 
         public IType FindGenericArgument(string key)
@@ -238,11 +238,6 @@ namespace ILRuntime.Runtime.Enviorment
         public bool IsArray
         {
             get { return false; }
-        }
-
-        public int ArrayRank
-        {
-            get { return type.ArrayRank; }
         }
         #endregion
     }

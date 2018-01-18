@@ -43,16 +43,13 @@ namespace ILRuntime.CLR.Utils
                             }
                             else if (name.Contains(gp.Name))
                             {
-                                t = appdomain.GetType(ga, contextType, contextMethod);
-                                if (t == null && genericArguments != null)
-                                    t = genericArguments[j];
                                 if (name == gp.Name)
                                 {
-                                    name = t.FullName;
+                                    name = ga.FullName;
                                 }
                                 else if (name == gp.Name + "[]")
                                 {
-                                    name = t.FullName + "[]";
+                                    name = ga.FullName + "[]";
                                 }
                                 else
                                 {
@@ -65,7 +62,6 @@ namespace ILRuntime.CLR.Utils
                                     name = name.Replace("," + gp.Name + "[", "," + ga.FullName + "[");*/
                                     name = ReplaceGenericArgument(name, gp.Name, ga.FullName);
                                 }
-                                t = null;
                             }
                         }
                         if (t == null)
@@ -243,8 +239,8 @@ namespace ILRuntime.CLR.Utils
                 if (!(obj is ILEnumTypeInstance))
                 {
                     var ins = (ILTypeInstance)obj;
-                    /*if (ins.IsValueType)
-                        ins = ins.Clone();*/
+                    if (ins.IsValueType)
+                        ins = ins.Clone();
                     return ins.CLRInstance;
                 }
             }

@@ -153,14 +153,11 @@ namespace ILRuntime.Reflection
         {
             if (customAttributes == null)
                 InitializeCustomAttribute();
-
             List<object> res = new List<object>();
             for (int i = 0; i < customAttributes.Length; i++)
             {
-                if (attributeTypes[i].Equals(attributeType))
-                {
+                if (attributeTypes[i] == attributeType)
                     res.Add(customAttributes[i]);
-                }
             }
             return res.ToArray();
         }
@@ -190,14 +187,10 @@ namespace ILRuntime.Reflection
         {
             if (customAttributes == null)
                 InitializeCustomAttribute();
-
-
             for (int i = 0; i < customAttributes.Length; i++)
             {
-                if (attributeTypes[i].Equals(attributeType))
-                {
+                if (attributeTypes[i] == attributeType)
                     return true;
-                }
             }
             return false;
         }

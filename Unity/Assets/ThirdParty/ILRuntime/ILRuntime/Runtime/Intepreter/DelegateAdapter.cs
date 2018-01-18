@@ -687,12 +687,6 @@ namespace ILRuntime.Runtime.Intepreter
                 if(ret->ObjectType>= ObjectTypes.Object)
                 {
                     retObj = mStack[ret->Value];
-                    if(retObj == null)
-                    {
-                        retSObj.ObjectType = ObjectTypes.Null;
-                        retSObj.Value = -1;
-                        retSObj.ValueLow = 0;
-                    }
                 }
                 intp.Free(ret);
             }

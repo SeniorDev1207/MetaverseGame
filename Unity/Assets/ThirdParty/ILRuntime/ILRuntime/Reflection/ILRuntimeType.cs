@@ -21,7 +21,7 @@ namespace ILRuntime.Reflection
         ILRuntimeMethodInfo[] methods;
 
         public ILType ILType { get { return type; } }
-
+        
         public ILRuntimeType(ILType t)
         {
             type = t;
@@ -46,7 +46,7 @@ namespace ILRuntime.Reflection
                 catch
                 {
                     attributeTypes[i] = typeof(Attribute);
-                }
+                }               
             }
 
         }
@@ -113,12 +113,7 @@ namespace ILRuntime.Reflection
         {
             get
             {
-                if (type.IsEnum)
-                    return typeof(Enum);
-                else
-                {
-                    return type.BaseType != null ? type.BaseType.ReflectionType : null;
-                }
+                return type.BaseType != null ? type.BaseType.ReflectionType : null;
             }
         }
 
@@ -158,7 +153,7 @@ namespace ILRuntime.Reflection
         {
             get
             {
-                return type.TypeDefinition.Namespace;
+                throw new NotImplementedException();
             }
         }
 
@@ -196,7 +191,7 @@ namespace ILRuntime.Reflection
             List<object> res = new List<object>();
             for(int i = 0; i < customAttributes.Length; i++)
             {
-                if (attributeTypes[i].Equals(attributeType))
+                if (attributeTypes[i] == attributeType)
                     res.Add(customAttributes[i]);
             }
             return res.ToArray();
@@ -294,7 +289,7 @@ namespace ILRuntime.Reflection
             }
             for (int i = methods.Length + fields.Length; i < res.Length; i++)
             {
-                res[i] = properties[i - methods.Length - fields.Length];
+                res[i] = properties[i- methods.Length - fields.Length];
             }
 
             return res;
@@ -348,7 +343,7 @@ namespace ILRuntime.Reflection
                 InitializeCustomAttribute();
             for (int i = 0; i < customAttributes.Length; i++)
             {
-                if (attributeTypes[i].Equals(attributeType))
+                if (attributeTypes[i] == attributeType)
                     return true;
             }
             return false;

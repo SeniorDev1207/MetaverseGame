@@ -31,8 +31,7 @@ namespace ILRuntime.CLR.TypeSystem
         CLRCreateDefaultInstanceDelegate createDefaultInstanceDelegate;
         CLRCreateArrayInstanceDelegate createArrayInstanceDelegate;
         Dictionary<int, int> fieldTokenMapping;
-        IType byRefType, elementType;
-        Dictionary<int, IType> arrayTypes;
+        IType byRefType, arrayType, elementType;
         IType[] interfaces;
         bool isDelegate;
         IType baseType;
@@ -74,11 +73,7 @@ namespace ILRuntime.CLR.TypeSystem
             {
                 if (fieldMapping == null)
                     InitializeFields();
-
-                if (fieldIdxMapping != null)
-                    return fieldIdxMapping.Count;
-                else
-                    throw new NotSupportedException("Cannot find ValueTypeBinder for type:" + clrType.FullName);
+                return fieldIdxMapping.Count;
             }
         }
 
@@ -153,16 +148,11 @@ namespace ILRuntime.CLR.TypeSystem
         {
             get
             {
-                return arrayTypes != null ? arrayTypes[1] : null;
+                return arrayType;
             }
         }
 
         public bool IsArray
-        {
-            get;private set;
-        }
-
-        public int ArrayRank
         {
             get;private set;
         }
@@ -233,7 +223,8 @@ namespace ILRuntime.CLR.TypeSystem
                     if (!valueTypeBinderGot)
                     {
                         valueTypeBinderGot = true;
-                        appdomain.ValueTypeBinders.TryGetValue(clrType, out valueTypeBinder);
+                        if (appdomain.ValueTypeBinders.TryGetValue(clrType, out valueTypeBinder))
+                            valueTypeBinder.CLRType = this;
                     }
                     return valueTypeBinder;
                 }
@@ -579,14 +570,7 @@ namespace ILRuntime.CLR.TypeSystem
                             }
                             if (match)
                             {
-                                try
-                                {
-                                    match = returnType == null || (i.ReturnType != null && i.ReturnType.TypeForCLR == returnType.TypeForCLR);
-                                }
-                                catch
-                                {
-
-                                }
+                                match = returnType == null || i.ReturnType.TypeForCLR == returnType.TypeForCLR;
                             }
                             if (match)
                             {
@@ -662,36 +646,33 @@ namespace ILRuntime.CLR.TypeSystem
 
         public IType MakeGenericInstance(KeyValuePair<string, IType>[] genericArguments)
         {
-            lock (this)
+            if (genericInstances == null)
+                genericInstances = new List<CLRType>();
+            foreach (var i in genericInstances)
             {
-                if (genericInstances == null)
-                    genericInstances = new List<CLRType>();
-                foreach (var i in genericInstances)
+                bool match = true;
+                for (int j = 0; j < genericArguments.Length; j++)
                 {
-                    bool match = true;
-                    for (int j = 0; j < genericArguments.Length; j++)
+                    if (i.genericArguments[j].Value != genericArguments[j].Value)
                     {
-                        if (i.genericArguments[j].Value != genericArguments[j].Value)
-                        {
-                            match = false;
-                            break;
-                        }
+                        match = false;
+                        break;
                     }
-                    if (match)
-                        return i;
                 }
-                Type[] args = new Type[genericArguments.Length];
-                for (int i = 0; i < genericArguments.Length; i++)
-                {
-                    args[i] = genericArguments[i].Value.TypeForCLR;
-                }
-                Type newType = clrType.MakeGenericType(args);
-                var res = new CLRType(newType, appdomain);
-                res.genericArguments = genericArguments;
-
-                genericInstances.Add(res);
-                return res;
+                if (match)
+                    return i;
             }
+            Type[] args = new Type[genericArguments.Length];
+            for (int i = 0; i < genericArguments.Length; i++)
+            {
+                args[i] = genericArguments[i].Value.TypeForCLR;
+            }
+            Type newType = clrType.MakeGenericType(args);
+            var res = new CLRType(newType, appdomain);
+            res.genericArguments = genericArguments;
+
+            genericInstances.Add(res);
+            return res;
         }
 
         public object CreateDefaultInstance()
@@ -729,23 +710,16 @@ namespace ILRuntime.CLR.TypeSystem
             }
             return byRefType;
         }
-        public IType MakeArrayType(int rank)
+        public IType MakeArrayType()
         {
-            if (arrayTypes == null)
+            if (arrayType == null)
             {
-                arrayTypes = new Dictionary<int, IType>();
+                Type t = clrType.MakeArrayType();
+                arrayType = new CLRType(t, appdomain);
+                ((CLRType)arrayType).elementType = this;
+                ((CLRType)arrayType).IsArray = true;
             }
-            IType atype;
-            if (!arrayTypes.TryGetValue(rank, out atype))
-            {
-                Type t = rank > 1 ? clrType.MakeArrayType(rank) : clrType.MakeArrayType();
-                atype = new CLRType(t, appdomain);
-                ((CLRType)atype).elementType = this;
-                ((CLRType)atype).IsArray = true;
-                ((CLRType)atype).ArrayRank = rank;
-                arrayTypes[rank] = atype;
-            }
-            return atype;
+            return arrayType;
         }
 
         public IType ResolveGenericType(IType contextType)

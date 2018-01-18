@@ -30,8 +30,7 @@ namespace ILRuntime.CLR.TypeSystem
         int fieldStartIdx = -1;
         int totalFieldCnt = -1;
         KeyValuePair<string, IType>[] genericArguments;
-        IType baseType, byRefType, enumType, elementType;
-        Dictionary<int, IType> arrayTypes;
+        IType baseType, byRefType, arrayType, enumType, elementType;
         Type arrayCLRType, byRefCLRType;
         IType[] interfaces;
         bool baseTypeInitialized = false;
@@ -256,11 +255,6 @@ namespace ILRuntime.CLR.TypeSystem
             get; private set;
         }
 
-        public int ArrayRank
-        {
-            get; private set;
-        }
-
         private bool? isValueType;
 
         public bool IsValueType
@@ -343,7 +337,7 @@ namespace ILRuntime.CLR.TypeSystem
         {
             get
             {
-                return arrayTypes != null ? arrayTypes[1] : null;
+                return arrayType;
             }
         }
 
@@ -563,7 +557,7 @@ namespace ILRuntime.CLR.TypeSystem
                         methods[i.Name] = lst;
                     }
                     var m = new ILMethod(i, this, appdomain);
-                    lst.Add(m);
+                    lst.Add(new ILMethod(i, this, appdomain));
                 }
             }
 
@@ -975,21 +969,17 @@ namespace ILRuntime.CLR.TypeSystem
             return byRefType;
         }
 
-        public IType MakeArrayType(int rank)
+        public IType MakeArrayType()
         {
-            if (arrayTypes == null)
-                arrayTypes = new Dictionary<int, IType>();
-            IType atype;
-            if(!arrayTypes.TryGetValue(rank, out atype))
+            if (arrayType == null)
             {
-                var def = new ArrayType(typeRef, rank);
-                atype = new ILType(def, appdomain);
-                ((ILType)atype).IsArray = true;
-                ((ILType)atype).elementType = this;
-                ((ILType)atype).arrayCLRType = rank > 1 ? this.TypeForCLR.MakeArrayType(rank) : this.TypeForCLR.MakeArrayType();
-                arrayTypes[rank] = atype;
+                var def = new ArrayType(typeRef);
+                arrayType = new ILType(def, appdomain);
+                ((ILType)arrayType).IsArray = true;
+                ((ILType)arrayType).elementType = this;
+                ((ILType)arrayType).arrayCLRType = this.TypeForCLR.MakeArrayType();
             }
-            return atype;
+            return arrayType;
         }
 
         public IType ResolveGenericType(IType contextType)

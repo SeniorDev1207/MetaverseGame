@@ -209,7 +209,7 @@ namespace ILRuntime.Runtime.Intepreter
                         {
                             if (value.GetType().IsPrimitive)
                             {
-                                ILIntepreter.UnboxObject(esp, value, managedObjs, type.AppDomain);
+                                ILIntepreter.UnboxObject(esp, value);
                             }
                             else
                             {
@@ -293,7 +293,7 @@ namespace ILRuntime.Runtime.Intepreter
                     case ObjectTypes.Object:
                     case ObjectTypes.FieldReference:
                     case ObjectTypes.ArrayReference:
-                        mStack[val->Value] = ILIntepreter.CheckAndCloneValueType(managedObjs[i], type.AppDomain);
+                        mStack[val->Value] = managedObjs[i];
                         val->ValueLow = fields[i].ValueLow;
                         break;
                     case ObjectTypes.ValueTypeObjectReference:
@@ -421,7 +421,15 @@ namespace ILRuntime.Runtime.Intepreter
             for (int i = 0; i < fields.Length; i++)
             {
                 ins.fields[i] = fields[i];
-                ins.managedObjs[i] = ILIntepreter.CheckAndCloneValueType(managedObjs[i],Type.AppDomain);
+                ins.managedObjs[i] = managedObjs[i];
+            }
+            if (type.FirstCLRBaseType is Enviorment.CrossBindingAdaptor)
+            {
+                ins.clrInstance = ((Enviorment.CrossBindingAdaptor)type.FirstCLRBaseType).CreateCLRInstance(type.AppDomain, ins);
+            }
+            else
+            {
+                ins.clrInstance = ins;
             }
             return ins;
         }

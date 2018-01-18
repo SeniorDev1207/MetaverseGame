@@ -13,99 +13,36 @@ namespace ILRuntime.Runtime.CLRBinding
         {
             StringBuilder sb = new StringBuilder();
             int idx = 0;
-            bool isMethodsGot = false;
             foreach (var i in methods)
             {
                 if (excludes != null && excludes.Contains(i))
                     continue;
                 if (type.ShouldSkipMethod(i))
                     continue;
-                
-                if (i.IsGenericMethod)
+                bool isProperty = i.IsSpecialName;
+                var param = i.GetParameters();
+                StringBuilder sb2 = new StringBuilder();
+                sb2.Append("{");
+                bool first = true;
+                foreach (var j in param)
                 {
-                    if (!isMethodsGot)
-                    {
-                        sb.AppendLine(@"            Dictionary<string, List<MethodInfo>> genericMethods = new Dictionary<string, List<MethodInfo>>();
-            List<MethodInfo> lst = null;                    
-            foreach(var m in type.GetMethods())
-            {
-                if(m.IsGenericMethodDefinition)
-                {
-                    if (!genericMethods.TryGetValue(m.Name, out lst))
-                    {
-                        lst = new List<MethodInfo>();
-                        genericMethods[m.Name] = lst;
-                    }
-                    lst.Add(m);
+                    if (first)
+                        first = false;
+                    else
+                        sb2.Append(", ");
+                    sb2.Append("typeof(");
+                    string tmp, clsName;
+                    bool isByRef;
+                    j.ParameterType.GetClassName(out tmp, out clsName, out isByRef);
+                    sb2.Append(clsName);
+                    sb2.Append(")");
+                    if (isByRef)
+                        sb2.Append(".MakeByRefType()");
                 }
-            }");
-                        isMethodsGot = true;
-                    }
-
-                    var param = i.GetGenericArguments();
-                    StringBuilder sb2 = new StringBuilder();
-                    sb2.Append("{");
-                    bool first = true;
-                    foreach (var j in param)
-                    {
-                        if (first)
-                            first = false;
-                        else
-                            sb2.Append(", ");
-                        sb2.Append("typeof(");
-                        string tmp, clsName;
-                        bool isByRef;
-                        j.GetClassName(out tmp, out clsName, out isByRef);
-                        sb2.Append(clsName);
-                        sb2.Append(")");
-                        if (isByRef)
-                            sb2.Append(".MakeByRefType()");
-                    }
-                    sb2.Append("}");
-                    sb.AppendLine(string.Format("            args = new Type[]{0};", sb2));
-                    sb.AppendLine(string.Format("            if (genericMethods.TryGetValue(\"{0}\", out lst))", i.Name));
-                    sb.Append(@"            {
-                foreach(var m in lst)
-                {
-                    if(m.GetParameters().Length == ");
-                    sb.Append(i.GetParameters().Length.ToString());
-                    sb.Append(@")
-                    {
-                        method = m.MakeGenericMethod(args);
-                        app.RegisterCLRMethodRedirection(method, ");
-                    sb.AppendLine(string.Format("{0}_{1});", i.Name, idx));
-                    sb.AppendLine(@"
-                        break;
-                    }
-                }
-            }");
-                }
-                else
-                {
-                    var param = i.GetParameters();
-                    StringBuilder sb2 = new StringBuilder();
-                    sb2.Append("{");
-                    bool first = true;
-                    foreach (var j in param)
-                    {
-                        if (first)
-                            first = false;
-                        else
-                            sb2.Append(", ");
-                        sb2.Append("typeof(");
-                        string tmp, clsName;
-                        bool isByRef;
-                        j.ParameterType.GetClassName(out tmp, out clsName, out isByRef);
-                        sb2.Append(clsName);
-                        sb2.Append(")");
-                        if (isByRef)
-                            sb2.Append(".MakeByRefType()");
-                    }
-                    sb2.Append("}");
-                    sb.AppendLine(string.Format("            args = new Type[]{0};", sb2));
-                    sb.AppendLine(string.Format("            method = type.GetMethod(\"{0}\", flag, null, args, null);", i.Name));
-                    sb.AppendLine(string.Format("            app.RegisterCLRMethodRedirection(method, {0}_{1});", i.Name, idx));
-                }
+                sb2.Append("}");
+                sb.AppendLine(string.Format("            args = new Type[]{0};", sb2));
+                sb.AppendLine(string.Format("            method = type.GetMethod(\"{0}\", flag, null, args, null);", i.Name));
+                sb.AppendLine(string.Format("            app.RegisterCLRMethodRedirection(method, {0}_{1});", i.Name, idx));
 
                 idx++;
             }
@@ -115,7 +52,7 @@ namespace ILRuntime.Runtime.CLRBinding
         internal static string GenerateMethodWraperCode(this Type type, MethodInfo[] methods, string typeClsName, HashSet<MethodBase> excludes)
         {
             StringBuilder sb = new StringBuilder();
-            bool isMultiArr = type.IsArray && type.GetArrayRank() > 1;
+
             int idx = 0;
             foreach (var i in methods)
             {
@@ -142,12 +79,7 @@ namespace ILRuntime.Runtime.CLRBinding
                     p.ParameterType.GetClassName(out tmp, out clsName, out isByRef);
                     if (isByRef)
                         sb.AppendLine("            ptr_of_this_method = ILIntepreter.GetObjectAndResolveReference(ptr_of_this_method);");
-                    if (isMultiArr)
-                    {
-                        sb.AppendLine(string.Format("            {0} a{1} = {2};", clsName, j, p.ParameterType.GetRetrieveValueCode(clsName)));
-                    }
-                    else
-                        sb.AppendLine(string.Format("            {0} {1} = {2};", clsName, p.Name, p.ParameterType.GetRetrieveValueCode(clsName)));
+                    sb.AppendLine(string.Format("            {0} {1} = {2};", clsName, p.Name, p.ParameterType.GetRetrieveValueCode(clsName)));
                     if (!isByRef && !p.ParameterType.IsPrimitive)
                         sb.AppendLine("            __intp.Free(ptr_of_this_method);");
                 }
@@ -173,27 +105,6 @@ namespace ILRuntime.Runtime.CLRBinding
                 }
                 else
                     sb.Append("            ");
-                string genericArguments = "";
-                if (i.IsGenericMethod)
-                {
-                    var p = i.GetGenericArguments();
-                    StringBuilder sb2 = new StringBuilder();
-                    bool first = true;
-                    sb2.Append('<');
-                    foreach(var j in p)
-                    {
-                        if (first)
-                            first = false;
-                        else
-                            sb2.Append(", ");
-                        string tmp, clsName;
-                        bool isByRef;
-                        j.GetClassName(out tmp, out clsName, out isByRef);
-                        sb2.Append(clsName);
-                    }
-                    sb2.Append('>');
-                    genericArguments = sb2.ToString();
-                }
                 if (i.IsStatic)
                 {
                     if (isProperty)
@@ -276,7 +187,7 @@ namespace ILRuntime.Runtime.CLRBinding
                     }
                     else
                     {
-                        sb.Append(string.Format("{0}.{1}{2}(", typeClsName, i.Name, genericArguments));
+                        sb.Append(string.Format("{0}.{1}(", typeClsName, i.Name));
                         param.AppendParameters(sb);
                         sb.AppendLine(");");
                     }
@@ -311,27 +222,9 @@ namespace ILRuntime.Runtime.CLRBinding
                         else
                             throw new NotImplementedException();
                     }
-                    else if(isMultiArr)
-                    {
-                        if (i.Name == "Get")
-                        {
-                            sb.Append("instance_of_this_method[");
-                            param.AppendParameters(sb, true);
-                            sb.AppendLine("];");
-                        }
-                        else
-                        {
-                            sb.Append("instance_of_this_method[");
-                            param.AppendParameters(sb, true, 1);
-                            sb.Append("]");
-                            sb.Append(" = a");
-                            sb.Append(param.Length);
-                            sb.AppendLine(";");
-                        }
-                    }
                     else
                     {
-                        sb.Append(string.Format("instance_of_this_method.{0}{1}(", i.Name, genericArguments));
+                        sb.Append(string.Format("instance_of_this_method.{0}(", i.Name));
                         param.AppendParameters(sb);
                         sb.AppendLine(");");
                     }
@@ -373,8 +266,8 @@ namespace ILRuntime.Runtime.CLRBinding
                         }
                         else
                         {
-                            var ___type = __domain.GetType(___obj.GetType()) as CLRType;
-                            ___type.SetFieldValue(ptr_of_this_method->ValueLow, ref ___obj, ");
+                            var t = __domain.GetType(___obj.GetType()) as CLRType;
+                            t.SetFieldValue(ptr_of_this_method->ValueLow, ref ___obj, ");
                     sb.Append(p.Name);
                     sb.Append(@");
                         }
@@ -382,16 +275,16 @@ namespace ILRuntime.Runtime.CLRBinding
                     break;
                 case ObjectTypes.StaticFieldReference:
                     {
-                        var ___type = __domain.GetType(ptr_of_this_method->Value);
-                        if(___type is ILType)
+                        var t = __domain.GetType(ptr_of_this_method->Value);
+                        if(t is ILType)
                         {
-                            ((ILType)___type).StaticInstance[ptr_of_this_method->ValueLow] = ");
+                            ((ILType)t).StaticInstance[ptr_of_this_method->ValueLow] = ");
                     sb.Append(p.Name);
                     sb.Append(@";
                         }
                         else
                         {
-                            ((CLRType)___type).SetStaticFieldValue(ptr_of_this_method->ValueLow, ");
+                            ((CLRType)t).SetStaticFieldValue(ptr_of_this_method->ValueLow, ");
                     sb.Append(p.Name);
                     sb.Append(@");
                         }

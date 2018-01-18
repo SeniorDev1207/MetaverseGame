@@ -28,25 +28,7 @@ namespace ILRuntime.Runtime.CLRBinding
             {
                 if (!type.IsAbstract || !type.IsSealed)
                 {
-                    if (type.IsArray)
-                    {
-                        Type elementType = type;
-                        int arrCnt = 0;
-                        while (elementType.IsArray)
-                        {
-                            elementType = elementType.GetElementType();
-                            arrCnt++;
-                        }
-                        string elem, clsName;
-                        bool isByRef;
-                        elementType.GetClassName(out clsName, out elem, out isByRef);
-                        string trail = "";
-                        for (int i = 0; i < arrCnt; i++)
-                            trail += "[]";
-                        sb.AppendLine(string.Format("            app.RegisterCLRCreateArrayInstance(type, s => new {0}[s]{1});", elem, trail));
-                    }
-                    else
-                        sb.AppendLine(string.Format("            app.RegisterCLRCreateArrayInstance(type, s => new {0}[s]);", typeClsName));
+                    sb.AppendLine(string.Format("            app.RegisterCLRCreateArrayInstance(type, s => new {0}[s]);", typeClsName));
                 }
             }
 

@@ -28,8 +28,6 @@ namespace ILRuntime.CLR.TypeSystem
 
         bool IsArray { get; }
 
-        int ArrayRank { get; }
-
         bool IsValueType { get; }
 
         bool IsDelegate { get; }
@@ -72,7 +70,7 @@ namespace ILRuntime.CLR.TypeSystem
 
         IType MakeByRefType();
 
-        IType MakeArrayType(int rank);
+        IType MakeArrayType();
         IType FindGenericArgument(string key);
 
         IType ResolveGenericType(IType contextType);

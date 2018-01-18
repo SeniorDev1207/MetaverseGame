@@ -20,10 +20,6 @@ namespace ILRuntime.Runtime.Debugger
         CSStep,
         SCStepComplete,
         CSResolveVariable,
-        SCResolveVariableResult,
-        CSResolveIndexAccess,
-        SCResolveIndexAccessResult,
-        CSEnumChildren,
-        SCEnumChildrenResult,
+        SCResolveVariableResult
     }
 }
